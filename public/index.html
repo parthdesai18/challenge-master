@@ -72,6 +72,7 @@
             success: (data) => {
                 //console.log(data);
                 setUpSelections(data);
+                
             },
             error: function(error){
                 console.log(error);
@@ -89,9 +90,10 @@
             option.value = item;
             option.textContent = item;
 
+            
             selection.append(option);
         });
-
+        
 
         //onChange to create table
         let ageCountTable = document.getElementById("age_count_table");

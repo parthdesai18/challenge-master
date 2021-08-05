@@ -23,13 +23,14 @@ const getUsers = () => {
 };
 
 const getListOfAgesOfUsersWith = (item) => {
+    //console.log(item, "inside DB get list of age of user");
     const dataAccessMethod = () => {
         // map to store based on users
         let userMap = {};
-        for(const key in db.usersByID){
+        for(const key in db.usersById){
             userMap[db.usersById[key].username] = db.usersById[key].age;
         }
-
+        console.log(userMap);
         //map to store items based on age group with count
         let itemMap = {};
         for(const key in db.itemsOfUserByUsername){
@@ -48,6 +49,7 @@ const getListOfAgesOfUsersWith = (item) => {
         }
         return itemMap;
     };
+    //console.log(itemMap);
     return mockDBCall(dataAccessMethod);
 }
 
