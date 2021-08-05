@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <link rel="icon" href="favicon.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <title>Walmex Challenge</title>
+</head>
+
+<style>
+    html{
+        margin-left: 100px;
+    }
+
+    table{
+        border-collapse: collapse;
+        border: solid;
+        border-width: 1px 0;
+    }
+    
+    tr:last-child{
+        border-bottom: none;
+    }
+    th{
+        width: 100px;
+        text-align: center;
+        border-collapse: collapse;
+        border: solid;
+        border-width: 1px 0;
+    }
+    td{
+        width: 80px;
+        text-align: center;
+    }
+</style>
+
+<script>
+    function getUsersAndAge(){
+        $.ajax({
+            type:"GET",
+            url: "http://localhost:3000/users",
+            success: function(data){
+                const users = eval(data);
+                let table = document.getElementById("user_age_table");
+
+                users.forEach((user) => {
+                    let newRow = document.createElement("tr");
+                    let name = document.createElement("td");
+                    name.textContent = user.username;
+                    let age = document.createElement("td");
+                    age.textContent = user.age;
+                    newRow.append(name);
+                    newRow.append(age);
+                    table.append(newRow);
+                });
+            },
+        });
+    }
+
+    function getItemWithAge(){
+        const reqData = {
+            item: "carrot",
+        };
+
+        $.ajax({
+            type:"POST",
+            url:"http://localhost:3000/users/age",
+            data: JSON.stringify(reqData),
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: (data) => {
+                //console.log(data);
+                setUpSelections(data);
+            },
+            error: function(error){
+                console.log(error);
+            },
+        });
+    }
+
+    function setUpSelections(data){
+        //get all items
+        const items = Object.keys(data);
+        //add other options
+        const selection = document.getElementById("item_selection");
+        items.forEach((item) =>{
+            let option = document.createElement("option");
+            option.value = item;
+            option.textContent = item;
+
+            selection.append(option);
+        });
+
+
+        //onChange to create table
+        let ageCountTable = document.getElementById("age_count_table");
+        selection.addEventListener("change", (e) =>{
+            removePreviousChild(ageCountTable);
+            if(e.target.value !== ""){
+                const ageGroup = Object.keys(data[e.target.value]);
+                ageGroup.forEach((age) => {
+                    let newRow = document.createElement("tr");
+                    let ageCol = document.createElement("td");
+                    ageCol.textContent = age;
+                    let countCol = document.createElement("td");
+                    countCol.textContent = data[e.target.value][age];
+
+                    newRow.append(ageCol, countCol);
+                    ageCountTable.append(newRow);       
+                });
+            }
+        });
+    }
+
+    function removePreviousChild(parentNode){
+        let secondNode = parentNode.childNodes[2];
+        while(secondNode){
+            parentNode.removeChild(secondNode);
+            secondNode = parentNode.childNodes[2];
+        }
+    }
+</script>
+
+
+<body>
+    <h1>All Users</h1>
+    <h4>Users and their age</h4>
+    <table id="user_age_table">
+        <tr>
+            <th>Users/UserName</th>
+            <th>Age</th>
+        </tr>
+    </table>
+
+    <h1>Age Demographics of Users with Count</h1>
+    <select id="item_selection">
+        <option selected disabled hidden>Item</option>
+    </select>
+
+    <table id="age_count_table">
+        <tr>
+            <th>Age</th>
+            <th>Count</th>
+        </tr>
+    </table>
+
+</body>
+
+<script>
+    getUsersAndAge();
+    getItemWithAge();
+</script>
+</html>
